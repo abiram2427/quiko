@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QUIKO – Winter Arc Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf0f6;--sf:#fff;--ink:#12202e;--mute:#5d6f82;--line:#d3dde8;--acc:#2f55ff;--soft:#dfe6ff;--ok:#12a36b;--okbg:#d9f4e8;--warn:#b4570a;--warnbg:#fff0dd;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1621;--sf:#162232;--ink:#e8eff7;--mute:#8da0b5;--line:#26364a;--acc:#7b94ff;--soft:#222f55;--ok:#3fd69b;--okbg:#103a2c;--warn:#ffb26b;--warnbg:#3a2a14;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1621;--sf:#162232;--ink:#e8eff7;--mute:#8da0b5;--line:#26364a;--acc:#7b94ff;--soft:#222f55;--ok:#3fd69b;--okbg:#103a2c;--warn:#ffb26b;--warnbg:#3a2a14;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Instrument Sans",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 60px}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.logo{font:800 clamp(38px,9vw,56px)/.9 "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.04em;margin:0}
+.logo span{color:var(--acc)}
+.clock{text-align:right}
+.clock b{display:block;font:700 clamp(24px,6vw,34px)/1 "Bricolage Grotesque",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.clock small,.mute{color:var(--mute)}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
+h2{font:700 17px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin:0 0 10px}
+button,select,input{font:inherit;color:inherit}
+button{font-weight:600;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.4;cursor:default}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+select,input[type=number],input[type=email],input[type=text]{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.sp{flex:1}
+.big{font:800 clamp(30px,7vw,44px)/1.05 "Bricolage Grotesque",system-ui,sans-serif;letter-spacing:-.02em;margin:0}
+.badge{display:inline-block;border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600;background:var(--soft);color:var(--acc)}
+.res{border-left:4px solid var(--acc);background:var(--soft);border-radius:0 12px 12px 0;padding:12px 14px;margin-top:12px}
+.res.perfect{border-color:var(--ok);background:var(--okbg)}.res.part{border-color:var(--warn);background:var(--warnbg)}
+.res b{font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif}
+.strip{display:flex;gap:5px;overflow-x:auto;padding:2px 0 8px}
+.dp{flex:none;width:36px;height:36px;border-radius:10px;padding:0;display:grid;place-content:center;font-size:13px;font-variant-numeric:tabular-nums}
+.dp.p{background:var(--okbg);border-color:var(--ok);color:var(--ok)}.dp.h{background:var(--warnbg);border-color:var(--warn)}
+.dp.t{border-color:var(--ink)}.dp.sel{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hab{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.hab:last-child{border:0}
+.hab input{width:22px;height:22px;accent-color:var(--acc);margin:0}
+.hab.on span{text-decoration:line-through;color:var(--mute)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.two{grid-template-columns:1fr}}
+.ringbox{display:flex;gap:14px;align-items:center}
+.ring{position:relative;width:120px;height:120px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:12;stroke-linecap:round}
+.ring .bg{stroke:var(--soft)}.ring .fg{stroke:var(--acc);transition:stroke-dashoffset .5s}.ring.done .fg{stroke:var(--ok)}
+.ring div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring b{font:800 24px/1 "Bricolage Grotesque",system-ui,sans-serif}.ring small{color:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.stat{border-left:3px solid var(--acc);padding-left:10px}.stat b{display:block;font:800 24px/1.1 "Bricolage Grotesque",system-ui,sans-serif}.stat small{color:var(--mute)}
+textarea{width:100%;min-height:64px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;font:inherit;color:inherit}
+input[type=number]{width:96px}.gate{max-width:440px;margin:8vh auto 0}
+.lock{opacity:.5;pointer-events:none}
+.arc{position:relative;height:76px;margin:0 4px}
+.arc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.arc path{fill:none;stroke:var(--acc);stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.arc button{position:absolute;min-width:84px}.a-l{left:0;bottom:0}.a-r{right:0;bottom:0}.a-c{left:50%;top:0;transform:translateX(-50%)}
+.datebtn{display:block;width:100%;text-align:left;background:none;border:0;padding:6px 0;border-radius:12px;cursor:pointer}
+.datebtn .big{display:block}
+.bar{height:6px;background:var(--soft);border-radius:9px;margin:10px 0 14px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.wz{display:grid;grid-template-columns:76px 1fr 76px;gap:10px;align-items:stretch}
+.opt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px solid var(--line);border-radius:14px;padding:10px 4px;cursor:pointer;font-weight:600;font-size:13px}
+.opt input{width:26px;height:26px;margin:0;accent-color:var(--warn)}.opt.ok input{accent-color:var(--ok)}
+.opt:has(input:checked){border-color:var(--warn);background:var(--warnbg)}.opt.ok:has(input:checked){border-color:var(--ok);background:var(--okbg)}
+.item{display:grid;place-content:center;text-align:center;border:2px solid var(--ink);border-radius:14px;padding:18px 8px;font:700 clamp(17px,4.5vw,22px)/1.2 "Bricolage Grotesque",system-ui,sans-serif}
+.tg{display:inline-block;border-radius:999px;padding:2px 10px;margin:3px 4px 3px 0;font-size:13px}.tg.g{background:var(--okbg);color:var(--ok)}.tg.b{background:var(--warnbg);color:var(--warn)}
+.grp{margin:4px 0}
+.ov{position:fixed;inset:0;background:rgba(8,14,22,.55);display:grid;place-items:center;padding:16px;z-index:20}.ov[hidden]{display:none}
+.calbox{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:14px;width:min(360px,100%)}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px;text-align:center}
+.cgrid small{color:var(--mute);padding:4px 0}
+.cd{padding:0;height:40px;border-radius:10px;font-variant-numeric:tabular-nums}.cd.p{background:var(--okbg);border-color:var(--ok);color:var(--ok)}.cd.h{background:var(--warnbg);border-color:var(--warn)}.cd.t{border-color:var(--ink)}.cd.sel{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.gate label{display:block;margin:10px 0 4px;color:var(--mute);font-size:13px}.gate input{width:100%;margin:0}.gate .msg{background:var(--soft);border-radius:10px;padding:8px 12px}.lnk{background:none;border:0;padding:4px 6px;color:var(--acc);font-weight:500}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="hd">
+  <div><h1 class="logo">QUIK<span>O</span></h1><div class="mute" id="who">Winter Arc planner</div></div>
+  <div class="clock"><b id="time">--:--:--</b><small id="date"></small></div>
+ </div>
+ <div id="gate" class="card gate"><p class="mute">Loading…</p></div>
+ <div id="app" hidden></div>
+ <div id="cal" class="ov" hidden></div>
+</div>
+<script>
+(function(){
+var H=["Sleep 7-8h","Work + Study","Gym","Save money","Only water","No junk food","No porn / fap","No girls","Less scroll/game","Limit social","Social w/ purpose","Skip pointless"];
+var FULL=(1<<H.length)-1,START=new Date(),END=new Date();
+var DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var $=function(i){return document.getElementById(i)};
+var pad=function(n){return n<10?"0"+n:""+n};
+var db=null,cloud=false,uid=null,label="",LS="quiko:",cache={},timers={},cur=null,busy=0;
+function tod(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
+function ym(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function pop(n){var c=0;while(n){c+=n&1;n>>=1}return c}
+function clamp(d){return d<START?new Date(START):d>END?new Date(END):d}
+
+// ---- Supabase (REST, no library needed)
+var SB="https://vnoaxmrsdrjhxqrnpjtz.supabase.co",KEY="sb_publishable_aE8PM6Bep2Tnf2XBtCYeRA_kwURc4ps",SK="quiko:session";
+var sess=null,mode="login",msg="",lastEm="",recTok=null;
+try{lastEm=localStorage.getItem("quiko:last")||""}catch(e){}
+function hdr(t){var h={"apikey":KEY,"Content-Type":"application/json"};if(t)h.Authorization="Bearer "+t;return h}
+async function api(path,body,tok,method){
+ var r,j=null;try{r=await fetch(SB+path,{method:method||"POST",headers:hdr(tok),body:body?JSON.stringify(body):undefined})}catch(e){throw new Error("Can’t reach the server at "+SB.replace("https://","")+". Check your internet, try another network (or a VPN), and confirm this address matches your Supabase Project URL.")}
+ try{j=await r.json()}catch(e){}
+ if(!r.ok)throw new Error((j&&(j.msg||j.message||j.error_description||j.error))||"Request failed ("+r.status+")");return j}
+function saveSess(x){sess=x;try{if(x){x.expires_at=x.expires_at||Math.floor(Date.now()/1000)+(x.expires_in||3600);localStorage.setItem(SK,JSON.stringify(x))}else localStorage.removeItem(SK)}catch(e){}}
+async function token(){if(!sess)return null;
+ if(sess.expires_at-60<Date.now()/1000){var n=await api("/auth/v1/token?grant_type=refresh_token",{refresh_token:sess.refresh_token});n.user=n.user||sess.user;saveSess(n)}
+ return sess.access_token}
+async function load(id){
+ if(cache[id])return cache[id];var o={d:{}};
+ try{var r=await fetch(SB+"/rest/v1/entries?month=eq."+encodeURIComponent(id)+"&select=data",{headers:hdr(await token())});
+  if(!r.ok)throw 0;var j=await r.json();if(j[0]&&j[0].data)o=j[0].data}catch(e){o.__bad=1}
+ if(!o.d)o.d={};cache[id]=o;return o}
+function persist(id){clearTimeout(timers[id]);timers[id]=setTimeout(async function(){
+ if(cache[id].__bad){st("Couldn’t load your data. Check your connection and refresh");return}
+ try{var h=hdr(await token());h.Prefer="resolution=merge-duplicates,return=minimal";
+  var r=await fetch(SB+"/rest/v1/entries?on_conflict=user_id,month",{method:"POST",headers:h,body:JSON.stringify({user_id:sess.user.id,month:id,data:cache[id]})});
+  if(!r.ok)throw 0;st("Saved")}catch(e){st("Couldn’t save. Check your connection")}},400)}
+function st(t){var e=$("stat");if(e){e.textContent=t;setTimeout(function(){if(e.textContent===t)e.textContent=""},2500)}}
+
+// ---- sign in / register
+function authUI(){
+ var g=$("gate"),f="";g.hidden=false;$("app").hidden=true;$("who").textContent="Winter Arc planner";
+ var T={login:"Log in",register:"Create account",verify:"Verify your email",forgot:"Reset password",reset:"Set a new password"}[mode];
+ if(mode==="login"||mode==="register")f+='<div class="row" style="margin-bottom:12px"><button type="button" data-m="login"'+(mode==="login"?' class="pri"':"")+'>Log in</button><button type="button" data-m="register"'+(mode==="register"?' class="pri"':"")+'>Register</button></div>';
+ else f+='<h2>'+T+'</h2>';
+ if(msg)f+='<p class="msg">'+esc(msg)+'</p>';
+ if(mode!=="reset")f+='<label for="em">Email</label><input type="email" id="em" required autocomplete="email" value="'+esc(lastEm)+'">';
+ if(mode==="login"||mode==="register"||mode==="reset")f+='<label for="pw">'+(mode==="reset"?"New password":"Password")+'</label><input type="password" id="pw" required minlength="6" autocomplete="'+(mode==="login"?"current-password":"new-password")+'">';
+ if(mode==="register")f+='<label for="pw2">Confirm password</label><input type="password" id="pw2" required minlength="6" autocomplete="new-password">';
+ if(mode==="verify")f+='<label for="code">Code from the email (if it shows one)</label><input type="text" id="code" inputmode="numeric" autocomplete="one-time-code" required>';
+ f+='<button type="submit" class="pri" style="width:100%">'+({login:"Log in",register:"Create account",verify:"Verify",forgot:"Send reset link",reset:"Save password"}[mode])+'</button>';
+ var l="";
+ if(mode==="login")l='<button type="button" data-m="forgot" class="lnk">Forgot password?</button> <button type="button" data-m="verify" class="lnk">I have a code</button>';
+ else if(mode!=="reset")l='<button type="button" data-m="login" class="lnk">Back to log in</button>';
+ g.innerHTML='<form id="af">'+f+'</form><p style="margin:12px 0 0">'+l+'</p>'}
+$("gate").addEventListener("click",function(e){var b=e.target.closest("[data-m]");if(b){mode=b.dataset.m;msg="";authUI()}});
+$("gate").addEventListener("submit",async function(e){
+ e.preventDefault();var em=$("em")?$("em").value.trim().toLowerCase():"",pw=$("pw")?$("pw").value:"",btn=e.target.querySelector("button[type=submit]");
+ if(em){lastEm=em;try{localStorage.setItem("quiko:last",em)}catch(x){}}
+ btn.disabled=true;btn.textContent="Please wait…";
+ try{
+  if(mode==="login"){saveSess(await api("/auth/v1/token?grant_type=password",{email:em,password:pw}));return enter()}
+  if(mode==="register"){
+   if(pw.length<6)throw new Error("Password needs at least 6 characters.");
+   if(pw!==$("pw2").value)throw new Error("Passwords don’t match.");
+   var r=await api("/auth/v1/signup",{email:em,password:pw});
+   if(r.access_token){saveSess(r);return enter()}
+   mode="verify";msg="We sent a confirmation email to "+em+". Open the link in it, then log in. If it shows a code, enter it below."}
+  else if(mode==="verify"){saveSess(await api("/auth/v1/verify",{type:"signup",email:em,token:$("code").value.trim()}));return enter()}
+  else if(mode==="forgot"){await api("/auth/v1/recover",{email:em});mode="login";msg="If that email has an account, a reset link is on its way."}
+  else if(mode==="reset"){await api("/auth/v1/user",{password:pw},recTok,"PUT");mode="login";msg="Password updated. Log in with your new password."}
+  else msg="";
+ }catch(x){msg=x.message}
+ authUI()});
+async function logout(){try{var t=await token();if(t)await api("/auth/v1/logout",null,t)}catch(e){}saveSess(null);cache={};timers={};mode="login";msg="";authUI()}
+async function enter(){
+ cache={};timers={};$("gate").hidden=true;$("app").hidden=false;label=sess.user.email||"you";$("who").textContent="Signed in as "+label;
+ var s=await load("settings"),t=tod();
+ if(!s.start&&!s.__bad){s.start=t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate());persist("settings")}
+ var p=(s.start||iso(t)).split("-");START=new Date(+p[0],+p[1]-1,+p[2]);END=new Date(START.getFullYear()+99,11,31);
+ goTo(clamp(t))}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+async function boot(){
+ var h=location.hash.replace(/^#/,""),q=new URLSearchParams(h);
+ if(q.get("access_token")){history.replaceState(null,"",location.pathname);
+  if(q.get("type")==="recovery"){recTok=q.get("access_token");mode="reset";return authUI()}
+  try{var u=await fetch(SB+"/auth/v1/user",{headers:hdr(q.get("access_token"))}).then(function(r){return r.json()});
+   saveSess({access_token:q.get("access_token"),refresh_token:q.get("refresh_token"),expires_in:+q.get("expires_in")||3600,user:u});return enter()}catch(e){}}
+ try{var raw=localStorage.getItem(SK);if(raw){sess=JSON.parse(raw);await token();return enter()}}catch(e){saveSess(null)}
+ authUI()}
+
+// navigation
+async function goTo(d){cur=clamp(d);await load(ym(cur));await load(ym(new Date(cur.getFullYear(),cur.getMonth(),cur.getDate()-1)));await load("settings");render();stats()}
+var DEF=function(){return{c:0,k:0,p:0,x:false,w:"",s:0,n:""}};
+function ent(d){var m=cache[ym(d)],e=(m&&m.d[d.getDate()])||{};return Object.assign(DEF(),e)}
+function setEnt(d,p){var k=ym(d),m=cache[k],dd=d.getDate();m.d[dd]=Object.assign(DEF(),m.d[dd]||{},p);persist(k)}
+function goal(){return+((cache.settings||{}).goal)||10000}
+function names(e,f){return H.filter(function(x,j){return f(e.c>>j&1,e.k>>j&1)})}
+function grp(t,arr,c){return arr.length?'<div class="grp"><span class="mute">'+t+'</span> '+arr.map(function(x){return'<span class="tg '+c+'">'+esc(x)+'</span>'}).join("")+'</div>':""}
+function compare(d,e){
+ var p=new Date(d.getFullYear(),d.getMonth(),d.getDate()-1);
+ if(p<START)return'<p class="mute">This is your first day, so there is nothing to compare with yet.</p>';
+ var q=ent(p),lab=p.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+ if(!(q.x||q.c||q.k))return'<p class="mute">No record for '+lab+', so there is nothing to compare with.</p>';
+ var a=[],b=[],c=[],f=[];
+ H.forEach(function(x,j){var n=e.c>>j&1,o=q.c>>j&1;if(n&&!o)a.push(x);else if(!n&&o)b.push(x);else if(n)c.push(x);else f.push(x)});
+ var df=pop(e.c)-pop(q.c);
+ var h='<p><b>'+(df>0?"Up "+df+" from ":df<0?"Down "+(-df)+" from ":"Same as ")+lab+'</b> ('+pop(q.c)+' then '+pop(e.c)+' of '+H.length+')</p>'+grp("Improved",a,"g")+grp("Kept up",c,"g")+grp("Slipped",b,"b")+grp("Still missing",f,"b");
+ var ps=+q.s||0,ts=+e.s||0;if(ps&&ts)h+='<p class="mute">Steps: '+(ts>=ps?"+":"−")+Math.abs(ts-ps).toLocaleString()+' vs '+lab+'.</p>';
+ return h}
+function results(d,e){
+ var n=pop(e.c),T=H.length,g=goal(),s=+e.s||0;
+ var dn=names(e,function(c){return c}),sk=names(e,function(c,k){return!c&&k}),ms=names(e,function(c,k){return!c&&!k});
+ var msg=n===T?"Perfect day. Every habit done. Keep this rhythm going.":n>=9?"Strong day. You are close to perfect, so tighten the last few.":n>=6?"A decent day, but you finished only about half to three quarters of it. Aim to add two more tomorrow.":n>=3?"A tough day. Pick the two easiest habits and lock them in first tomorrow.":"A reset day. Don’t stack the blame, just start tomorrow with one small win.";
+ var imp=sk.concat(ms);
+ var h='<div class="card"><h2>Result</h2><div class="res '+(n===T?"perfect":"part")+'"><b>'+n+' out of '+T+' done</b><div>'+msg+'</div></div>';
+ h+='<div style="margin-top:12px">'+grp("Done",dn,"g")+grp("Skipped",sk,"b")+grp("Not done",ms,"b")+'</div>';
+ h+='<h2 style="margin-top:14px">What to improve</h2><p style="margin:0">'+(imp.length?'Work on: '+imp.map(esc).join(", ")+'.':'Nothing missed in the checklist.')+(s<g?' Steps are '+(g-s).toLocaleString()+' short of your goal.':' Step goal reached.')+'</p>';
+ h+='<h2 style="margin-top:14px">Compared with the previous day</h2>'+compare(d,e)+'</div>';
+ return h}
+function wizard(e){
+ var T=H.length,i=Math.min(e.p||0,T-1),last=i===T-1,sk=e.k>>i&1,dn=e.c>>i&1;
+ return'<div class="card"><div class="row"><h2 style="margin:0">Checklist</h2><span class="sp"></span><span class="mute">'+(i+1)+' of '+T+'</span></div><div class="bar"><i style="width:'+(i/T*100)+'%"></i></div>'
+ +'<div class="wz"><label class="opt"><input type="checkbox" data-w="skip"'+(sk?" checked":"")+'><span>Skip</span></label><div class="item">'+esc(H[i])+'</div><label class="opt ok"><input type="checkbox" data-w="done"'+(dn?" checked":"")+'><span>Done</span></label></div>'
+ +'<div class="row" style="margin-top:14px"><span class="mute" style="font-size:13px">Once you move on, you can’t go back.</span><span class="sp"></span><button class="pri" id="'+(last?"submit":"next")+'">'+(last?"Submit":"Next ›")+'</button></div></div>'}
+
+function render(){
+ var d=cur,t=tod(),diff=Math.round((t-d)/864e5),e=ent(d),locked=diff<0,g=goal(),s=+e.s||0,C=2*Math.PI*42;
+ var dn=Math.round((d-START)/864e5)+1,title=diff===0?"Today":diff===1?"Yesterday":diff===-1?"Tomorrow":DN[d.getDay()];
+ var h='<div class="card"><div class="arc"><svg viewBox="0 0 300 76" preserveAspectRatio="none" aria-hidden="true"><path d="M30 58 Q150 -30 270 58"/></svg><button class="a-l" id="pd" '+(d<=START?"disabled":"")+' aria-label="Previous day">‹ Prev</button><button class="a-c pri" id="today">Today</button><button class="a-r" id="nd" '+(d>=END?"disabled":"")+' aria-label="Next day">Next ›</button></div>';
+ h+='<div style="margin-top:8px"><span class="badge">'+title+' · Day '+dn+'</span><button class="datebtn" id="opencal" aria-haspopup="dialog"><span class="big">'+d.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"})+'</span><small class="mute">▾ Tap to pick a date</small></button></div></div>';
+ if(locked)h+='<div class="card"><div class="res"><b>Opens on this day</b><div class="mute">You can start this checklist once the day arrives.</div></div></div>';
+ else h+=e.x?results(d,e):wizard(e);
+ if(!locked){
+ h+='<div class="two"><div class="card"><h2>Steps</h2><div class="ringbox"><div class="ring'+(s>=g?" done":"")+'"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" style="stroke-dasharray:'+C+';stroke-dashoffset:'+C*(1-Math.min(1,s/g))+'"/></svg><div><b>'+s.toLocaleString()+'</b><small>'+Math.round(s/g*100)+'%</small></div></div>';
+ h+='<div><input type="number" id="steps" min="0" step="100" value="'+(s||"")+'" aria-label="Steps"><div class="row" style="margin-top:8px"><button data-add="1000">+1k</button><button data-add="2500">+2.5k</button></div><div class="mute" style="margin-top:8px;font-size:13px">Goal <input type="number" id="goal" min="1000" step="500" value="'+g+'" style="width:84px;padding:4px 6px"></div></div></div></div>';
+ h+='<div class="card"><h2>Weight (kg)</h2><input type="number" id="weight" step="0.1" min="0" value="'+esc(e.w||"")+'" aria-label="Weight in kilograms"><h2 style="margin-top:14px">Note</h2><textarea id="note" placeholder="Gym PRs, wins, lessons…">'+esc(e.n||"")+'</textarea></div></div>'}
+ h+='<div class="card"><div class="stats" id="stats"></div></div>';
+ h+='<p class="row mute" style="margin-top:14px"><button id="out">Log out</button><span class="mute" id="stat" role="status"></span><span style="font-size:12px">Health sync: <code>QUIKO.setSteps("YYYY-MM-DD", n)</code></span></p>';
+ $("app").innerHTML=h}
+async function stats(){
+ var d=cur,m=cache[ym(d)],n=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),p=0,sum=0,c=0;
+ for(var i=1;i<=n;i++){var e=m.d[i];if(!e)continue;if(e.c===FULL)p++;if(e.s>0){sum+=+e.s;c++}}
+ var t=tod(),x=new Date(t),k=0;if(ent(x).c!==FULL)x.setDate(x.getDate()-1);
+ while(x>=START){var mm=await load(ym(x));if((mm.d[x.getDate()]||{}).c===FULL){k++;x.setDate(x.getDate()-1)}else break}
+ var el=$("stats");if(el)el.innerHTML='<div class="stat"><b>'+p+' / '+n+'</b><small>perfect days this month</small></div><div class="stat"><b>'+k+'</b><small>day streak</small></div><div class="stat"><b>'+(c?Math.round(sum/c).toLocaleString():0)+'</b><small>avg steps this month</small></div>'}
+function upd(p){setEnt(cur,p);render();stats()}
+
+// calendar
+var calY=0,calM=0;
+async function openCal(){calY=cur.getFullYear();calM=cur.getMonth();$("cal").hidden=false;await drawCal()}
+async function drawCal(){
+ var lo=START.getFullYear()*12+START.getMonth(),hi=END.getFullYear()*12+END.getMonth(),v=Math.min(hi,Math.max(lo,calY*12+calM));calY=Math.floor(v/12);calM=v%12;
+ await load(calY+"-"+pad(calM+1));
+ var n=new Date(calY,calM+1,0).getDate(),f=new Date(calY,calM,1).getDay(),t=tod(),mo="",yo="";
+ for(var i=0;i<12;i++){var mv=calY*12+i;mo+='<option value="'+i+'"'+(i===calM?" selected":"")+(mv<lo||mv>hi?" disabled":"")+'>'+new Date(2026,i,1).toLocaleDateString(undefined,{month:"long"})+'</option>'}
+ for(var y=START.getFullYear();y<=END.getFullYear();y++)yo+='<option'+(y===calY?" selected":"")+'>'+y+'</option>';
+ var h='<div class="calbox" role="dialog" aria-label="Pick a date"><div class="row"><button id="cpm" aria-label="Previous month">‹</button><select id="cm" aria-label="Month">'+mo+'</select><select id="cy" aria-label="Year">'+yo+'</select><button id="cnm" aria-label="Next month">›</button></div><div class="cgrid">';
+ DN.forEach(function(x){h+='<small>'+x+'</small>'});
+ for(var i=0;i<f;i++)h+='<span></span>';
+ for(var i=1;i<=n;i++){var di=new Date(calY,calM,i),ei=ent(di),c=ei.c===FULL?"p":(ei.x||ei.c)?"h":"";
+  if(di.getTime()===t.getTime())c+=" t";if(di.getTime()===cur.getTime())c+=" sel";
+  h+='<button class="cd '+c+'" data-cd="'+i+'"'+(di<START||di>END?" disabled":"")+' aria-label="'+di.toDateString()+'">'+i+'</button>'}
+ h+='</div><div class="row" style="margin-top:12px"><button id="ctoday">Today</button><span class="sp"></span><span class="mute" style="font-size:12px">Green: perfect · Orange: partly done</span><button id="cclose">Close</button></div></div>';
+ $("cal").innerHTML=h}
+function closeCal(){$("cal").hidden=true}
+$("cal").addEventListener("click",function(e){var t=e.target;
+ if(t===$("cal")||t.id==="cclose")return closeCal();
+ var b=t.closest("button");if(!b)return;
+ if(b.id==="cpm"){calM--;if(calM<0){calM=11;calY--}drawCal()}
+ else if(b.id==="cnm"){calM++;if(calM>11){calM=0;calY++}drawCal()}
+ else if(b.id==="ctoday"){closeCal();goTo(tod())}
+ else if(b.dataset.cd){closeCal();goTo(new Date(calY,calM,+b.dataset.cd))}});
+$("cal").addEventListener("change",function(e){if(e.target.id==="cm")calM=+e.target.value;if(e.target.id==="cy")calY=+e.target.value;drawCal()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeCal()});
+
+// events
+$("app").addEventListener("click",function(e){var t=e.target.closest("button");if(!t)return;
+ var d=cur,x=ent(d);
+ if(t.id==="pd")goTo(new Date(d.getFullYear(),d.getMonth(),d.getDate()-1));
+ else if(t.id==="nd")goTo(new Date(d.getFullYear(),d.getMonth(),d.getDate()+1));
+ else if(t.id==="today")goTo(tod());
+ else if(t.id==="opencal")openCal();
+ else if(t.id==="next"){upd({p:Math.min(H.length-1,(x.p||0)+1)})}
+ else if(t.id==="submit"){upd({x:true,p:H.length});window.scrollTo({top:0,behavior:"smooth"})}
+ else if(t.dataset.add)upd({s:(+x.s||0)+ +t.dataset.add});
+ else if(t.id==="out")logout()});
+$("app").addEventListener("change",function(e){var t=e.target,x=ent(cur),i=Math.min(x.p||0,H.length-1),b=1<<i;
+ if(t.dataset.w){var on=t.checked,c=x.c,k=x.k;
+  if(t.dataset.w==="skip"){k=on?k|b:k&~b;if(on)c&=~b}else{c=on?c|b:c&~b;if(on)k&=~b}
+  setEnt(cur,{c:c,k:k});var o=document.querySelector('[data-w="'+(t.dataset.w==="skip"?"done":"skip")+'"]');if(on&&o)o.checked=false}
+ else if(t.id==="steps")upd({s:Math.max(0,Math.round(+t.value)||0)});
+ else if(t.id==="weight")upd({w:t.value});
+ else if(t.id==="goal"){cache.settings.goal=Math.max(1000,+t.value||10000);persist("settings");render()}
+ else if(t.id==="note")upd({n:t.value})});
+
+// clock + public hook for Health sync
+function tick(){var n=new Date();$("time").textContent=pad(n.getHours())+":"+pad(n.getMinutes())+":"+pad(n.getSeconds());
+ $("date").textContent=n.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+tick();setInterval(tick,1000);
+window.QUIKO={setSteps:async function(iso,v){var p=iso.split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);if(isNaN(d)||d<START||d>END||!cur)return;
+ await load(ym(d));setEnt(d,{s:Math.max(0,Math.round(+v)||0)});if(ym(d)===ym(cur)){render();stats()}}};
+boot();
+})();
+</script>
+</body>
+</html>
